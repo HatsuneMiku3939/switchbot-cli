@@ -78,6 +78,8 @@ go build ./cmd/switchbot-cli
 
 Unit tests cover CLI command routing, config resolution, output formatting, and the SwitchBot client behavior against local HTTP test servers.
 
+GitHub Actions runs `go test ./...` and `go vet ./...` on pushes to `master` and on pull requests.
+
 ## Release
 
 Pushing a tag that starts with `v` to the remote repository triggers the GitHub Actions release workflow.
