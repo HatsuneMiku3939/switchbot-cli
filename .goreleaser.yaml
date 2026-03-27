@@ -1,0 +1,49 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: switch-bot-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/switch-bot-cli/
+    binary: switch-bot-cli
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{ .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+      - goos: darwin
+        formats: [zip]
+    files:
+      - README*
+      - LICENSE*
+
+changelog:
+  use: github-native
+
+release:
+  draft: true
+  replace_existing_draft: true
+  footer: >-
+
+    ---
+
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+
