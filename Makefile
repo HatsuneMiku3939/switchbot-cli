@@ -10,7 +10,7 @@ help: Makefile
 
 ## build: Build the project for production
 build:
-	go build ./cmd/switch-bot-cli
+	go build ./cmd/switchbot-cli
 
 ## test: Run all tests
 test:

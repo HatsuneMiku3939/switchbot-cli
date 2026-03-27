@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/hatsunemiku3939/switchbot-cli/version"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/yasu89/switch-bot-cli/version"
 )
 
 func TestRunTopLevelCommands(t *testing.T) {
@@ -464,32 +464,53 @@ func TestLoadFileConfig(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse config file")
 	})
+
+	t.Run("falls back to legacy config path", func(t *testing.T) {
+		t.Parallel()
+
+		configRoot := t.TempDir()
+		legacyConfigPath := filepath.Join(configRoot, legacyAppName, "config.yaml")
+		writeTestFile(t, legacyConfigPath, `
+SWITCH_BOT_TOKEN: legacy-token
+SWITCH_BOT_SECRET: legacy-secret
+`)
+
+		config, err := loadFileConfig(map[string]string{
+			"XDG_CONFIG_HOME": configRoot,
+		})
+		require.NoError(t, err)
+		assert.Equal(t, "legacy-token", config.Token)
+		assert.Equal(t, "legacy-secret", config.Secret)
+	})
 }
 
-func TestResolveConfigPath(t *testing.T) {
+func TestResolveConfigPaths(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name   string
 		envMap map[string]string
-		want   string
-		wantOK bool
+		want   []string
 	}{
 		{
 			name: "uses xdg config home when available",
 			envMap: map[string]string{
 				"XDG_CONFIG_HOME": "/tmp/xdg",
 			},
-			want:   "/tmp/xdg/switch-bot-cli/config.yaml",
-			wantOK: true,
+			want: []string{
+				"/tmp/xdg/switchbot-cli/config.yaml",
+				"/tmp/xdg/switch-bot-cli/config.yaml",
+			},
 		},
 		{
 			name: "falls back to home config directory",
 			envMap: map[string]string{
 				"HOME": "/tmp/home",
 			},
-			want:   "/tmp/home/.config/switch-bot-cli/config.yaml",
-			wantOK: true,
+			want: []string{
+				"/tmp/home/.config/switchbot-cli/config.yaml",
+				"/tmp/home/.config/switch-bot-cli/config.yaml",
+			},
 		},
 	}
 
@@ -498,9 +519,9 @@ func TestResolveConfigPath(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, ok := resolveConfigPath(tt.envMap)
+			got, err := resolveConfigPaths(tt.envMap)
 
-			assert.Equal(t, tt.wantOK, ok)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -551,7 +572,7 @@ func writeJSONResponse(t *testing.T, w http.ResponseWriter, payload map[string]a
 func writeTestConfig(t *testing.T, configRoot string, content string) {
 	t.Helper()
 
-	configPath := filepath.Join(configRoot, "switch-bot-cli", "config.yaml")
+	configPath := filepath.Join(configRoot, appName, "config.yaml")
 	writeTestFile(t, configPath, content)
 }
 

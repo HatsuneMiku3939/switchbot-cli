@@ -10,14 +10,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	switchbotcli "github.com/yasu89/switch-bot-cli/internal/switchbot"
-	"github.com/yasu89/switch-bot-cli/version"
+	switchbotcli "github.com/hatsunemiku3939/switchbot-cli/internal/switchbot"
+	"github.com/hatsunemiku3939/switchbot-cli/version"
 	"gopkg.in/yaml.v3"
 )
 
 const (
-	outputJSON   = "json"
-	outputPretty = "pretty"
+	outputJSON    = "json"
+	outputPretty  = "pretty"
+	appName       = "switchbot-cli"
+	legacyAppName = "switch-bot-cli"
 )
 
 type commandConfig struct {
@@ -255,17 +257,27 @@ func parseEnvironment(environ []string) map[string]string {
 }
 
 func loadFileConfig(envMap map[string]string) (*fileConfig, error) {
-	configPath, ok := resolveConfigPath(envMap)
-	if !ok {
+	configPaths, err := resolveConfigPaths(envMap)
+	if err != nil {
+		return nil, err
+	}
+	if len(configPaths) == 0 {
 		return &fileConfig{}, nil
 	}
 
-	data, err := os.ReadFile(configPath)
-	if err != nil {
+	var data []byte
+	for _, configPath := range configPaths {
+		data, err = os.ReadFile(configPath)
+		if err == nil {
+			break
+		}
 		if os.IsNotExist(err) {
-			return &fileConfig{}, nil
+			continue
 		}
 		return nil, err
+	}
+	if err != nil {
+		return &fileConfig{}, nil
 	}
 
 	config := &fileConfig{}
@@ -276,7 +288,22 @@ func loadFileConfig(envMap map[string]string) (*fileConfig, error) {
 	return config, nil
 }
 
-func resolveConfigPath(envMap map[string]string) (string, bool) {
+func resolveConfigPaths(envMap map[string]string) ([]string, error) {
+	configRoot, err := resolveConfigRoot(envMap)
+	if err != nil {
+		return nil, err
+	}
+	if configRoot == "" {
+		return nil, nil
+	}
+
+	return []string{
+		filepath.Join(configRoot, appName, "config.yaml"),
+		filepath.Join(configRoot, legacyAppName, "config.yaml"),
+	}, nil
+}
+
+func resolveConfigRoot(envMap map[string]string) (string, error) {
 	configRoot := envMap["XDG_CONFIG_HOME"]
 	if configRoot == "" {
 		homeDir := envMap["HOME"]
@@ -284,12 +311,12 @@ func resolveConfigPath(envMap map[string]string) (string, bool) {
 			homeDir, _ = os.UserHomeDir()
 		}
 		if homeDir == "" {
-			return "", false
+			return "", nil
 		}
 		configRoot = filepath.Join(homeDir, ".config")
 	}
 
-	return filepath.Join(configRoot, "switch-bot-cli", "config.yaml"), true
+	return configRoot, nil
 }
 
 func cloneStringMap(input map[string]string) map[string]string {
@@ -326,12 +353,12 @@ func writeOutput(stdout io.Writer, format string, value interface{}) error {
 
 func printUsage(w io.Writer) {
 	_, _ = fmt.Fprintln(w, "Usage:")
-	_, _ = fmt.Fprintln(w, "  switch-bot-cli devices [--token TOKEN] [--secret SECRET] [--output json|pretty] [--base-url URL]")
-	_, _ = fmt.Fprintln(w, "  switch-bot-cli status --device-id ID [--token TOKEN] [--secret SECRET] [--output json|pretty] [--base-url URL]")
-	_, _ = fmt.Fprintln(w, "  switch-bot-cli command --device-id ID --command-parameter-json JSON [--token TOKEN] [--secret SECRET] [--output json|pretty] [--base-url URL]")
-	_, _ = fmt.Fprintln(w, "  switch-bot-cli version")
+	_, _ = fmt.Fprintf(w, "  %s devices [--token TOKEN] [--secret SECRET] [--output json|pretty] [--base-url URL]\n", appName)
+	_, _ = fmt.Fprintf(w, "  %s status --device-id ID [--token TOKEN] [--secret SECRET] [--output json|pretty] [--base-url URL]\n", appName)
+	_, _ = fmt.Fprintf(w, "  %s command --device-id ID --command-parameter-json JSON [--token TOKEN] [--secret SECRET] [--output json|pretty] [--base-url URL]\n", appName)
+	_, _ = fmt.Fprintf(w, "  %s version\n", appName)
 	_, _ = fmt.Fprintln(w, "")
-	_, _ = fmt.Fprintln(w, "Credentials precedence: flags > environment > ~/.config/switch-bot-cli/config.yaml")
+	_, _ = fmt.Fprintf(w, "Credentials precedence: flags > environment > ~/.config/%s/config.yaml\n", appName)
 }
 
 func Main() {

@@ -1,13 +1,13 @@
-# switch-bot-cli
+# switchbot-cli
 
-`switch-bot-cli` is a standalone CLI for SwitchBot devices built on top of [switch-bot-api-go](https://github.com/yasu89/switch-bot-api-go).
+`switchbot-cli` is a standalone CLI for SwitchBot devices built on top of [switch-bot-api-go](https://github.com/yasu89/switch-bot-api-go).
 
 ## Commands
 
 ```bash
-switch-bot-cli devices
-switch-bot-cli status --device-id <device-id>
-switch-bot-cli command --device-id <device-id> --command-parameter-json '{"command":"TurnOn"}'
+switchbot-cli devices
+switchbot-cli status --device-id <device-id>
+switchbot-cli command --device-id <device-id> --command-parameter-json '{"command":"TurnOn"}'
 ```
 
 ## Authentication
@@ -19,7 +19,9 @@ The CLI reads credentials from the following environment variables by default.
 
 You can also override them per command.
 
-If `~/.config/switch-bot-cli/config.yaml` contains the same keys, the CLI uses it as the fallback credential source. The precedence is `flags > environment variables > config.yaml`.
+If `~/.config/switchbot-cli/config.yaml` contains the same keys, the CLI uses it as the fallback credential source. The precedence is `flags > environment variables > config.yaml`.
+
+For a smoother rename, the CLI also reads the legacy path `~/.config/switch-bot-cli/config.yaml` when the new path does not exist.
 
 ```yaml
 SWITCH_BOT_TOKEN: your-token
@@ -52,7 +54,7 @@ Supported alias target values are:
 These values are case-sensitive and must match exactly.
 
 ```bash
-switch-bot-cli devices --token "$SWITCH_BOT_TOKEN" --secret "$SWITCH_BOT_SECRET"
+switchbot-cli devices --token "$SWITCH_BOT_TOKEN" --secret "$SWITCH_BOT_SECRET"
 ```
 
 ## Output
@@ -60,7 +62,7 @@ switch-bot-cli devices --token "$SWITCH_BOT_TOKEN" --secret "$SWITCH_BOT_SECRET"
 The default output format is compact JSON.
 
 ```bash
-switch-bot-cli devices --output pretty
+switchbot-cli devices --output pretty
 ```
 
 `pretty` renders indented JSON for easier inspection.
@@ -71,7 +73,7 @@ The CLI omits implementation-detail fields such as the internal `Client` pointer
 
 ```bash
 go test ./...
-go build ./cmd/switch-bot-cli
+go build ./cmd/switchbot-cli
 ```
 
 Unit tests cover CLI command routing, config resolution, output formatting, and the SwitchBot client behavior against local HTTP test servers.
