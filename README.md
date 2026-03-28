@@ -138,3 +138,7 @@ git push origin v0.1.0
 ```
 
 The release workflow publishes archive artifacts, Linux `.deb` and `.rpm` packages, and updates the Homebrew cask in the `HatsuneMiku3939/homebrew-tap` repository. Set the `HOMEBREW_TAP_GITHUB_TOKEN` GitHub Actions secret to a personal access token with write access to that repository before publishing a release.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
