@@ -10,6 +10,51 @@ switchbot-cli status --device-id <device-id>
 switchbot-cli command --device-id <device-id> --command-parameter-json '{"command":"TurnOn"}'
 ```
 
+## Installation
+
+### Homebrew
+
+Install the macOS cask from the custom tap.
+
+```bash
+brew tap hatsunemiku3939/tap
+brew install --cask switchbot-cli
+```
+
+You can also install it without a separate tap step.
+
+```bash
+brew install --cask hatsunemiku3939/tap/switchbot-cli
+```
+
+The cask installs an unsigned binary. If macOS blocks execution, inspect the binary first and then remove the quarantine attribute manually.
+
+```bash
+xattr -dr com.apple.quarantine "$(brew --prefix)/Caskroom/switchbot-cli/<version>/switchbot-cli"
+```
+
+### Linux packages
+
+Release assets for Linux include both `.deb` and `.rpm` packages for `amd64` and `arm64`.
+
+Download the package that matches your distribution and CPU architecture from the [GitHub Releases page](https://github.com/HatsuneMiku3939/switchbot-cli/releases) before installing it locally.
+
+Install a Debian package:
+
+```bash
+sudo dpkg -i ./switchbot-cli_<version>_amd64.deb
+```
+
+Install an RPM package:
+
+```bash
+sudo rpm -i ./switchbot-cli-<version>-1.x86_64.rpm
+```
+
+### Prepare secret and token
+
+Follow the [Getting Started guide of SwitchBotAPI](https://github.com/OpenWonderLabs/SwitchBotAPI?tab=readme-ov-file#getting-started) to obtain the token and secret for SwitchBotAPI.
+
 ## Authentication
 
 The CLI reads credentials from the following environment variables by default.
@@ -79,47 +124,6 @@ go build ./cmd/switchbot-cli
 Unit tests cover CLI command routing, config resolution, output formatting, and the SwitchBot client behavior against local HTTP test servers.
 
 GitHub Actions runs `go test ./...` and `go vet ./...` on pushes to `master` and on pull requests.
-
-## Homebrew
-
-Install the macOS cask from the custom tap.
-
-```bash
-brew tap hatsunemiku3939/tap
-brew install --cask switchbot-cli
-```
-
-You can also install it without a separate tap step.
-
-```bash
-brew install --cask hatsunemiku3939/tap/switchbot-cli
-```
-
-The cask installs an unsigned binary. If macOS blocks execution, inspect the binary first and then remove the quarantine attribute manually.
-
-```bash
-xattr -dr com.apple.quarantine "$(brew --prefix)/Caskroom/switchbot-cli/<version>/switchbot-cli"
-```
-
-## Linux Packages
-
-Release assets for Linux include both `.deb` and `.rpm` packages for `amd64` and `arm64`.
-
-Download the package that matches your distribution and CPU architecture from the GitHub Release page before installing it locally.
-
-https://github.com/HatsuneMiku3939/switchbot-cli/releases
-
-Install a Debian package:
-
-```bash
-sudo dpkg -i ./switchbot-cli_<version>_amd64.deb
-```
-
-Install an RPM package:
-
-```bash
-sudo rpm -i ./switchbot-cli-<version>-1.x86_64.rpm
-```
 
 You can build the release artifacts locally before tagging:
 
