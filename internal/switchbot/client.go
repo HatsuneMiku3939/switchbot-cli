@@ -254,7 +254,13 @@ func enrichDevice(device interface{}) (map[string]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		deviceMap["commandParameterJSONSchema"] = schema
+
+		var parsedSchema interface{}
+		if err := json.Unmarshal([]byte(schema), &parsedSchema); err != nil {
+			return nil, err
+		}
+
+		deviceMap["commandParameterJSONSchema"] = parsedSchema
 	}
 
 	return deviceMap, nil
