@@ -26,4 +26,4 @@ release-check:
 
 ## release-snapshot: Build snapshot release artifacts locally
 release-snapshot:
-	go run github.com/goreleaser/goreleaser/v2@latest release --snapshot --clean --skip=homebrew
+	go run github.com/goreleaser/goreleaser/v2@latest release --snapshot --clean

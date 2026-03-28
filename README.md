@@ -128,6 +128,8 @@ make release-check
 make release-snapshot
 ```
 
+`make release-snapshot` also verifies that the Homebrew cask can be generated from the configured release archives.
+
 ## Release
 
 Pushing a tag that starts with `v` to the remote repository triggers the GitHub Actions release workflow.
@@ -137,7 +139,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The release workflow publishes archive artifacts, Linux `.deb` and `.rpm` packages, and updates the Homebrew cask in the `HatsuneMiku3939/homebrew-tap` repository. Set the `HOMEBREW_TAP_GITHUB_TOKEN` GitHub Actions secret to a personal access token with write access to that repository before publishing a release.
+The release workflow publishes archive artifacts, Linux `.deb` and `.rpm` packages, and updates the Homebrew cask in the `HatsuneMiku3939/homebrew-tap` repository. The Homebrew cask is generated from the archive artifacts configured in `.goreleaser.yaml`, so keep the cask archive IDs aligned with the archive definitions. Set the `HOMEBREW_TAP_GITHUB_TOKEN` GitHub Actions secret to a personal access token with write access to that repository before publishing a release.
 
 ## License
 
