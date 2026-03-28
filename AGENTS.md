@@ -69,6 +69,10 @@
 - Do not change JSON field shape casually. Downstream scripts may rely on current output.
 - If you touch infrared remote handling, verify both normalization and command-schema exposure.
 - If you change commands, flags, config keys, install instructions, or release behavior, update `README.md`.
+- If you perform a release task, use `RELEASE-CHECKLIST.md` as the source of truth and work through it in order.
+- Before creating or pushing a release tag, confirm the intended version, branch, and commit, and make sure the checklist validation steps have been completed.
+- Do not publish a release if `go test ./...`, `go vet ./...`, `make release-check`, or `make release-snapshot` fails.
+- After any release workflow change, update both `RELEASE-CHECKLIST.md` and `README.md` so future release runs stay aligned with the repository process.
 - If you edit `.goreleaser.yaml`, run the release config tests and keep packaging expectations aligned.
 - Release automation depends on `.github/workflows/release.yml`.
 - Release automation depends on `.goreleaser.yaml`.

@@ -1,19 +1,27 @@
-# Release Checklist for v0.9.0
+# Release Checklist
 
-Use this checklist before publishing the `v0.9.0` release of `switchbot-cli`.
+Use this checklist before publishing any `switchbot-cli` release.
+
+## Release inputs
+
+Fill in these values before starting the release process.
+
+- Release version: `v<major>.<minor>.<patch>`
+- Release branch: `<branch-name>`
+- Release commit: `<commit-sha>`
 
 ## Scope and release candidate
 
 - [ ] Confirm the release commit is final and ready to tag.
 - [ ] Confirm the working tree is clean before creating the release tag.
 - [ ] Confirm the release will be created from the intended branch and commit.
-- [ ] Confirm the tag name will be exactly `v0.9.0`.
+- [ ] Confirm the tag name follows the expected format: `v<major>.<minor>.<patch>`.
 
 ## Documentation and versioning
 
-- [ ] Review `README.md` and confirm all user-facing changes in `v0.9.0` are documented.
+- [ ] Review `README.md` and confirm all user-facing changes are documented.
 - [ ] Confirm installation instructions are still accurate for Homebrew and Linux packages.
-- [ ] Decide whether `version/version.go` should be updated to `0.9.0` for non-release local builds.
+- [ ] Decide whether `version/version.go` should be updated for non-release local builds.
 - [ ] Confirm any release-related documentation is up to date.
 
 ## Validation and tests
@@ -42,8 +50,8 @@ Use this checklist before publishing the `v0.9.0` release of `switchbot-cli`.
 
 ## Publish steps
 
-- [ ] Create the tag: `git tag v0.9.0`
-- [ ] Push the tag: `git push origin v0.9.0`
+- [ ] Create the tag: `git tag v<major>.<minor>.<patch>`
+- [ ] Push the tag: `git push origin v<major>.<minor>.<patch>`
 - [ ] Monitor the GitHub Actions release workflow until it finishes.
 - [ ] Review the generated draft release notes and attached artifacts.
 - [ ] Publish the draft release after verification is complete.
