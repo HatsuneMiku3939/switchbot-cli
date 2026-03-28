@@ -17,15 +17,12 @@ builds:
       - arm64
     main: ./cmd/switchbot-cli/
     binary: switchbot-cli
+    ldflags:
+      - -s -w -X github.com/hatsunemiku3939/switchbot-cli/version.Version={{ .Version }}
 
 archives:
   - formats: [tar.gz]
-    name_template: >-
-      {{ .ProjectName }}_
-      {{ .Version }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else }}{{ .Arch }}{{ end }}
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ title .Os }}_{{ if eq .Arch \"amd64\" }}x86_64{{ else }}{{ .Arch }}{{ end }}"
     format_overrides:
       - goos: windows
         formats: [zip]
@@ -34,6 +31,24 @@ archives:
     files:
       - README*
       - LICENSE*
+
+nfpms:
+  - id: linux-packages
+    package_name: switchbot-cli
+    ids:
+      - switchbot-cli
+    formats:
+      - deb
+      - rpm
+    file_name_template: "{{ .ConventionalFileName }}"
+    vendor: HatsuneMiku3939
+    homepage: "https://github.com/HatsuneMiku3939/switchbot-cli"
+    maintainer: "HatsuneMiku3939"
+    description: "CLI for SwitchBot devices"
+    bindir: /usr/bin
+    contents:
+      - src: ./README.md
+        dst: /usr/share/doc/switchbot-cli/README.md
 
 changelog:
   use: github-native
