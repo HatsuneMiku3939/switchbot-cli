@@ -125,7 +125,9 @@ IR_TYPE_ALIASES:
 
 	device := infraredList[0].(map[string]any)
 	assert.Equal(t, "DIY Light", device["remoteType"])
-	assert.Contains(t, device, "commandParameterJSONSchema")
+	schema, ok := device["commandParameterJSONSchema"].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "object", schema["type"])
 	assert.NotContains(t, device, "Client")
 }
 

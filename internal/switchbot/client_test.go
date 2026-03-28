@@ -11,6 +11,18 @@ import (
 	switchbot "github.com/yasu89/switch-bot-api-go"
 )
 
+type invalidSchemaDevice struct {
+	DeviceID string `json:"deviceId"`
+}
+
+func (d invalidSchemaDevice) GetCommandParameterJSONSchema() (string, error) {
+	return "{", nil
+}
+
+func (d invalidSchemaDevice) ExecCommand(jsonString string) (*switchbot.CommonResponse, error) {
+	return nil, nil
+}
+
 func TestNewClientClonesAliases(t *testing.T) {
 	t.Parallel()
 
@@ -120,6 +132,14 @@ func TestWrapInfraredRemoteDeviceSupportedTypes(t *testing.T) {
 	}
 }
 
+func TestEnrichDeviceReturnsErrorForInvalidCommandSchema(t *testing.T) {
+	t.Parallel()
+
+	_, err := enrichDevice(invalidSchemaDevice{DeviceID: "device-id"})
+
+	require.Error(t, err)
+}
+
 func TestListDevicesEnrichesOutputAndAppliesAliases(t *testing.T) {
 	t.Parallel()
 
@@ -162,12 +182,16 @@ func TestListDevicesEnrichesOutputAndAppliesAliases(t *testing.T) {
 	require.Len(t, output.DeviceList, 1)
 	assert.Equal(t, "Bot", output.DeviceList[0]["deviceType"])
 	assert.NotContains(t, output.DeviceList[0], "Client")
-	assert.Contains(t, output.DeviceList[0], "commandParameterJSONSchema")
+	schema, ok := output.DeviceList[0]["commandParameterJSONSchema"].(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "object", schema["type"])
 
 	require.Len(t, output.InfraredRemoteList, 1)
 	assert.Equal(t, "DIY Light", output.InfraredRemoteList[0]["remoteType"])
 	assert.NotContains(t, output.InfraredRemoteList[0], "Client")
-	assert.Contains(t, output.InfraredRemoteList[0], "commandParameterJSONSchema")
+	schema, ok = output.InfraredRemoteList[0]["commandParameterJSONSchema"].(map[string]interface{})
+	require.True(t, ok)
+	assert.Equal(t, "object", schema["type"])
 }
 
 func TestGetStatus(t *testing.T) {
