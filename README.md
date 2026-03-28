@@ -101,6 +101,33 @@ The cask installs an unsigned binary. If macOS blocks execution, inspect the bin
 xattr -dr com.apple.quarantine "$(brew --prefix)/Caskroom/switchbot-cli/<version>/switchbot-cli"
 ```
 
+## Linux Packages
+
+Release assets for Linux include both `.deb` and `.rpm` packages for `amd64` and `arm64`.
+
+Download the package that matches your distribution and CPU architecture from the GitHub Release page before installing it locally.
+
+https://github.com/HatsuneMiku3939/switchbot-cli/releases
+
+Install a Debian package:
+
+```bash
+sudo dpkg -i ./switchbot-cli_<version>_amd64.deb
+```
+
+Install an RPM package:
+
+```bash
+sudo rpm -i ./switchbot-cli-<version>-1.x86_64.rpm
+```
+
+You can build the release artifacts locally before tagging:
+
+```bash
+make release-check
+make release-snapshot
+```
+
 ## Release
 
 Pushing a tag that starts with `v` to the remote repository triggers the GitHub Actions release workflow.
@@ -110,4 +137,4 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The release workflow also updates the Homebrew cask in the `HatsuneMiku3939/homebrew-tap` repository. Set the `HOMEBREW_TAP_GITHUB_TOKEN` GitHub Actions secret to a personal access token with write access to that repository before publishing a release.
+The release workflow publishes archive artifacts, Linux `.deb` and `.rpm` packages, and updates the Homebrew cask in the `HatsuneMiku3939/homebrew-tap` repository. Set the `HOMEBREW_TAP_GITHUB_TOKEN` GitHub Actions secret to a personal access token with write access to that repository before publishing a release.
