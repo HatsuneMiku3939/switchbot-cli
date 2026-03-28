@@ -31,7 +31,6 @@
 - Direct lint command: `go vet ./...`.
 - Credential lookup order is flags, then environment variables, then config file.
 - Supported config file path: `~/.config/switchbot-cli/config.yaml`.
-- Legacy fallback config file path: `~/.config/switch-bot-cli/config.yaml`.
 - Supported credential key: `SWITCH_BOT_TOKEN`.
 - Supported credential key: `SWITCH_BOT_SECRET`.
 - Optional config key: `IR_TYPE_ALIASES`.
@@ -57,7 +56,6 @@
 - Preserve exit code `1` for runtime or API failures.
 - Preserve exit code `2` for usage, validation, or configuration errors.
 - Preserve credential precedence: flags override environment variables, which override config file values.
-- Preserve legacy config-path fallback unless the rename policy is intentionally changed.
 - Output is JSON only. The default is compact JSON; `pretty` uses indented JSON.
 - Do not expose implementation-detail fields in CLI output. `Client` is intentionally removed from serialized device output.
 - Infrared remote aliases are case-sensitive and map custom `remoteType` values to supported SwitchBot infrared device kinds.
@@ -68,7 +66,6 @@
 ## Agent Guardrails
 
 - Do not bypass or silently change the config resolution rules in `internal/cli`.
-- Do not remove the legacy config lookup path without updating documentation and tests.
 - Do not change JSON field shape casually. Downstream scripts may rely on current output.
 - If you touch infrared remote handling, verify both normalization and command-schema exposure.
 - If you change commands, flags, config keys, install instructions, or release behavior, update `README.md`.

@@ -21,8 +21,6 @@ You can also override them per command.
 
 If `~/.config/switchbot-cli/config.yaml` contains the same keys, the CLI uses it as the fallback credential source. The precedence is `flags > environment variables > config.yaml`.
 
-For a smoother rename, the CLI also reads the legacy path `~/.config/switch-bot-cli/config.yaml` when the new path does not exist.
-
 ```yaml
 SWITCH_BOT_TOKEN: your-token
 SWITCH_BOT_SECRET: your-secret
