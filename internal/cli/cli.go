@@ -16,10 +16,9 @@ import (
 )
 
 const (
-	outputJSON    = "json"
-	outputPretty  = "pretty"
-	appName       = "switchbot-cli"
-	legacyAppName = "switch-bot-cli"
+	outputJSON   = "json"
+	outputPretty = "pretty"
+	appName      = "switchbot-cli"
 )
 
 type commandConfig struct {
@@ -257,27 +256,20 @@ func parseEnvironment(environ []string) map[string]string {
 }
 
 func loadFileConfig(envMap map[string]string) (*fileConfig, error) {
-	configPaths, err := resolveConfigPaths(envMap)
+	configPath, err := resolveConfigPath(envMap)
 	if err != nil {
 		return nil, err
 	}
-	if len(configPaths) == 0 {
+	if configPath == "" {
 		return &fileConfig{}, nil
 	}
 
-	var data []byte
-	for _, configPath := range configPaths {
-		data, err = os.ReadFile(configPath)
-		if err == nil {
-			break
-		}
+	data, err := os.ReadFile(configPath)
+	if err != nil {
 		if os.IsNotExist(err) {
-			continue
+			return &fileConfig{}, nil
 		}
 		return nil, err
-	}
-	if err != nil {
-		return &fileConfig{}, nil
 	}
 
 	config := &fileConfig{}
@@ -288,19 +280,16 @@ func loadFileConfig(envMap map[string]string) (*fileConfig, error) {
 	return config, nil
 }
 
-func resolveConfigPaths(envMap map[string]string) ([]string, error) {
+func resolveConfigPath(envMap map[string]string) (string, error) {
 	configRoot, err := resolveConfigRoot(envMap)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if configRoot == "" {
-		return nil, nil
+		return "", nil
 	}
 
-	return []string{
-		filepath.Join(configRoot, appName, "config.yaml"),
-		filepath.Join(configRoot, legacyAppName, "config.yaml"),
-	}, nil
+	return filepath.Join(configRoot, appName, "config.yaml"), nil
 }
 
 func resolveConfigRoot(envMap map[string]string) (string, error) {
