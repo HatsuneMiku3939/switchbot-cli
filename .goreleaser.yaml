@@ -38,6 +38,34 @@ archives:
 changelog:
   use: github-native
 
+homebrew_casks:
+  - name: switchbot-cli
+    ids:
+      - switchbot-cli
+    binaries:
+      - switchbot-cli
+    directory: Casks
+    homepage: "https://github.com/HatsuneMiku3939/switchbot-cli"
+    description: "CLI for SwitchBot devices"
+    url:
+      verified: "github.com/HatsuneMiku3939/switchbot-cli/"
+    repository:
+      owner: HatsuneMiku3939
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: github-actions[bot]
+      email: 41898282+github-actions[bot]@users.noreply.github.com
+    commit_msg_template: "Brew cask update for {{ .ProjectName }} version {{ .Tag }}"
+    caveats: |-
+      This cask installs an unsigned binary.
+
+      If macOS blocks execution, remove the quarantine attribute manually:
+        xattr -dr com.apple.quarantine "$(brew --prefix)/Caskroom/switchbot-cli/{{ .Version }}/switchbot-cli"
+
+      Review the binary and command before bypassing Gatekeeper.
+
 release:
   draft: true
   replace_existing_draft: true

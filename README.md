@@ -80,6 +80,27 @@ Unit tests cover CLI command routing, config resolution, output formatting, and 
 
 GitHub Actions runs `go test ./...` and `go vet ./...` on pushes to `master` and on pull requests.
 
+## Homebrew
+
+Install the macOS cask from the custom tap.
+
+```bash
+brew tap hatsunemiku3939/tap
+brew install --cask switchbot-cli
+```
+
+You can also install it without a separate tap step.
+
+```bash
+brew install --cask hatsunemiku3939/tap/switchbot-cli
+```
+
+The cask installs an unsigned binary. If macOS blocks execution, inspect the binary first and then remove the quarantine attribute manually.
+
+```bash
+xattr -dr com.apple.quarantine "$(brew --prefix)/Caskroom/switchbot-cli/<version>/switchbot-cli"
+```
+
 ## Release
 
 Pushing a tag that starts with `v` to the remote repository triggers the GitHub Actions release workflow.
@@ -88,3 +109,5 @@ Pushing a tag that starts with `v` to the remote repository triggers the GitHub 
 git tag v0.1.0
 git push origin v0.1.0
 ```
+
+The release workflow also updates the Homebrew cask in the `HatsuneMiku3939/homebrew-tap` repository. Set the `HOMEBREW_TAP_GITHUB_TOKEN` GitHub Actions secret to a personal access token with write access to that repository before publishing a release.
