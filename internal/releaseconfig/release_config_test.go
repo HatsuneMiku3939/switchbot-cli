@@ -15,6 +15,7 @@ type goreleaserConfig struct {
 		Ldflags []string `yaml:"ldflags"`
 	} `yaml:"builds"`
 	Archives []struct {
+		ID           string `yaml:"id"`
 		NameTemplate string `yaml:"name_template"`
 	} `yaml:"archives"`
 	NFPMS []struct {
@@ -24,6 +25,10 @@ type goreleaserConfig struct {
 		Formats          []string `yaml:"formats"`
 		FileNameTemplate string   `yaml:"file_name_template"`
 	} `yaml:"nfpms"`
+	HomebrewCasks []struct {
+		Name string   `yaml:"name"`
+		IDs  []string `yaml:"ids"`
+	} `yaml:"homebrew_casks"`
 }
 
 func TestGoReleaserConfigEmbedsReleaseVersion(t *testing.T) {
@@ -93,6 +98,49 @@ func TestGoReleaserConfigUsesStableArchiveNameTemplate(t *testing.T) {
 	if config.Archives[0].NameTemplate != want {
 		t.Fatalf("unexpected archive name template: %s", config.Archives[0].NameTemplate)
 	}
+
+	if config.Archives[0].ID != "release-archives" {
+		t.Fatalf("unexpected archive id: %s", config.Archives[0].ID)
+	}
+}
+
+func TestGoReleaserConfigHomebrewCaskUsesArchiveIDs(t *testing.T) {
+	t.Parallel()
+
+	config := loadGoReleaserConfig(t)
+
+	archiveIDs := make(map[string]struct{}, len(config.Archives))
+	for _, archive := range config.Archives {
+		if archive.ID == "" {
+			continue
+		}
+
+		archiveIDs[archive.ID] = struct{}{}
+	}
+
+	if len(archiveIDs) == 0 {
+		t.Fatal("expected at least one archive id in .goreleaser.yaml")
+	}
+
+	for _, cask := range config.HomebrewCasks {
+		if cask.Name != "switchbot-cli" {
+			continue
+		}
+
+		if len(cask.IDs) == 0 {
+			t.Fatal("homebrew cask must reference at least one archive id")
+		}
+
+		for _, id := range cask.IDs {
+			if _, ok := archiveIDs[id]; !ok {
+				t.Fatalf("homebrew cask references unknown archive id %q", id)
+			}
+		}
+
+		return
+	}
+
+	t.Fatal("switchbot-cli homebrew cask not found in .goreleaser.yaml")
 }
 
 func loadGoReleaserConfig(t *testing.T) goreleaserConfig {
